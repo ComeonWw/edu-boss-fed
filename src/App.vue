@@ -19,4 +19,10 @@
 </template>
 
 <style lang="scss" scoped>
+  // @import '~@/styles/variables.scss';
+
+  div {
+    background-color: $warning-color;
+  }
+
 </style>
