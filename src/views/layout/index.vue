@@ -1,16 +1,26 @@
 <template>
   <el-container>
-    <el-aside width="200px">Aside</el-aside>
+    <el-aside width="200px">
+      <!-- 引入app-aside组件 -->
+      <app-aside></app-aside>
+    </el-aside>
     <el-container>
       <el-header>Header</el-header>
-      <el-main>Main</el-main>
+      <el-main>
+        <!-- 设置子路由出口 -->
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script>
+import AppAside from './components/AppAside.vue'
 export default {
-  name: 'Layout'
+  name: 'Layout',
+  components: {
+    AppAside
+  }
 }
 </script>
 
