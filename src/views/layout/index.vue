@@ -5,7 +5,10 @@
       <app-aside></app-aside>
     </el-aside>
     <el-container>
-      <el-header>Header</el-header>
+      <el-header>
+        <!-- 引入app-header组件 -->
+        <app-header></app-header>
+      </el-header>
       <el-main>
         <!-- 设置子路由出口 -->
         <router-view></router-view>
@@ -16,10 +19,12 @@
 
 <script>
 import AppAside from './components/AppAside.vue'
+import AppHeader from './components/AppHeader.vue'
 export default {
   name: 'Layout',
   components: {
-    AppAside
+    AppAside,
+    AppHeader
   }
 }
 </script>
@@ -32,7 +37,7 @@ export default {
     background-color: #d3dce6;
   }
   .el-header {
-    background-color: #b3c0d1;
+    background-color: #fff;
   }
   .el-main {
     background-color: #e9eef3;
