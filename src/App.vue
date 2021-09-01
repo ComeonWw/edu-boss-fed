@@ -7,5 +7,20 @@
   </div>
 </template>
 
+<script>
+import request from '@/utils/request'
+request({
+  method: 'GET',
+  // url: 'http://edufront.lagou.com/front/ad/getAdList'
+  url: '/front/ad/getAdList'
+}).then(res => {
+  console.log(res)
+})
+
+export default {
+  name: 'App'
+}
+</script>
+
 <style lang="scss" scoped>
 </style>

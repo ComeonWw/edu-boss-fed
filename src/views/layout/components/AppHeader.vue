@@ -10,7 +10,7 @@
       <span class="el-dropdown-link">
         <!-- Element的Avatar组件 -->
         <el-avatar
-          :size="'40'"
+          :size="40"
           src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
         ></el-avatar>
         <i class="el-icon-arrow-down el-icon--right"></i>
