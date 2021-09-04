@@ -26,8 +26,8 @@
 </template>
 
 <script>
-import request from '@/utils/request'
-import qs from 'qs'
+// 封装请求模块后，引入使用
+import { login } from '@/services/user'
 
 export default {
   name: 'LoginIndex',
@@ -73,12 +73,7 @@ export default {
         // 2. 请求
         // 设置按钮加载中
         this.isLoginLoading = true
-        const { data } = await request({
-          method: 'POST',
-          headers: { 'content-type': 'application/x-www-form-urlencoded' },
-          url: '/front/user/login',
-          data: qs.stringify(this.form)
-        })
+        const { data } = await login(this.form)
         // 取消按钮加载中状态
         this.isLoginLoading = false
         // 3.响应处理
