@@ -15,7 +15,11 @@
         <el-input type="password" v-model="form.password"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">提交</el-button>
+        <el-button
+          type="primary"
+          @click="onSubmit"
+          :loading="isLoginLoading"
+        >提交</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -42,7 +46,9 @@ export default {
           { required: true, message: '请输入密码', trigger: 'blur' },
           { min: 6, max: 18, message: '密码长度为6-18个字符', trigger: 'blur' }
         ]
-      }
+      },
+      // 默认提交按钮不处于加载中
+      isLoginLoading: false
     }
   },
   methods: {
@@ -65,20 +71,25 @@ export default {
         // 1.表单验证
         await this.$refs.form.validate()
         // 2. 请求
+        // 设置按钮加载中
+        this.isLoginLoading = true
         const { data } = await request({
           method: 'POST',
           headers: { 'content-type': 'application/x-www-form-urlencoded' },
           url: '/front/user/login',
           data: qs.stringify(this.form)
         })
+        // 取消按钮加载中状态
+        this.isLoginLoading = false
         // 3.响应处理
         if (data.state !== 1) {
-          return alert(data.message)
+          return this.$message.error(data.message)
         }
         // 成功时跳转到首页，使用this.$router.push()
         this.$router.push({
           name: 'home'
         })
+        this.$message.success(data.message)
       } catch (err) {
         console.log('验证失败', err)
       }
