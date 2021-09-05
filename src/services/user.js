@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 import qs from 'qs'
-import store from '@/store'
+// import store from '@/store'
 
 export const login = data => {
   return request({
@@ -14,10 +14,10 @@ export const login = data => {
 export const getUserInfo = () => {
   return request({
     method: 'GET',
-    url: '/front/user/getInfo',
+    url: '/front/user/getInfo'
     // 在header中设置Token信息
-    headers: {
-      Authorization: store.state.user.access_token
-    }
+    // headers: {
+    //   Authorization: store.state.user.access_token
+    // }
   })
 }
