@@ -80,12 +80,13 @@ export default {
           return this.$message.error(data.message)
         }
         // 当登录成功时，记录登录状态，存储到vuex中
-        console.log(data.content)
+        // console.log(data.content)
         this.$store.commit('setUser', data.content)
         // 成功时跳转到首页，使用this.$router.push()
-        this.$router.push({
-          name: 'home'
-        })
+        // this.$router.push({
+        //   name: 'home'
+        // })
+        this.$router.push(this.$route.query.redirect || '/')
         this.$message.success(data.message)
       } catch (err) {
         console.log('验证失败', err)

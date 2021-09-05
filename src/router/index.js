@@ -82,7 +82,14 @@ router.beforeEach((to, from, next) => {
     // to路由要求具有登录状态，检测用户是否登录
     if (!store.state.user) {
       // 未登录，导航跳转到登录页面
-      next({ name: 'login' })
+      next({
+        name: 'login',
+        // 通过query属性给url设置查询字符串参数（键值均为自定义）
+        query: {
+          // path仅包含部分路径，fullpath为完整路径
+          redirect: to.fullPath
+        }
+      })
     } else {
       // 已经登录，允许通过
       next()
