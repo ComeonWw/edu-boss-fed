@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '@/store'
 
 // 通过import的方式，需要将VueRouter使用Vue.use()注册为Vue的插件，这样才能使用
 Vue.use(VueRouter)
@@ -18,32 +19,38 @@ const routes = [
       {
         path: '',
         name: 'home',
-        component: () => import(/* webpackChunkName: 'home' */'@/views/home/index')
+        component: () => import(/* webpackChunkName: 'home' */'@/views/home/index'),
+        meta: { requiresAuth: true }
       },
       {
         path: '/role',
         name: 'role',
-        component: () => import(/* webpackChunkName: 'role' */'@/views/role/index')
+        component: () => import(/* webpackChunkName: 'role' */'@/views/role/index'),
+        meta: { requiresAuth: true }
       },
       {
         path: '/menu',
         name: 'menu',
-        component: () => import(/* webpackChunkName: 'menu' */'@/views/menu/index')
+        component: () => import(/* webpackChunkName: 'menu' */'@/views/menu/index'),
+        meta: { requiresAuth: true }
       },
       {
         path: '/resource',
         name: 'resource',
-        component: () => import(/* webpackChunkName: 'resource' */'@/views/resource/index')
+        component: () => import(/* webpackChunkName: 'resource' */'@/views/resource/index'),
+        meta: { requiresAuth: true }
       },
       {
         path: '/cource',
         name: 'cource',
-        component: () => import(/* webpackChunkName: 'cource' */'@/views/cource/index')
+        component: () => import(/* webpackChunkName: 'cource' */'@/views/cource/index'),
+        meta: { requiresAuth: true }
       },
       {
         path: '/user',
         name: 'user',
-        component: () => import(/* webpackChunkName: 'user' */'@/views/user/index')
+        component: () => import(/* webpackChunkName: 'user' */'@/views/user/index'),
+        meta: { requiresAuth: true }
       },
       {
         path: '/advert',
@@ -66,6 +73,24 @@ const routes = [
 
 const router = new VueRouter({
   routes
+})
+
+// 全使用vue router 的导航守卫beforeEach,在任务导航被触发时进行登录状态检测
+router.beforeEach((to, from, next) => {
+  // 官方示例，检测路由是否需要登录
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // to路由要求具有登录状态，检测用户是否登录
+    if (!store.state.user) {
+      // 未登录，导航跳转到登录页面
+      next({ name: 'login' })
+    } else {
+      // 已经登录，允许通过
+      next()
+    }
+  } else {
+    // 无需登录，允许通过
+    next()
+  }
 })
 
 // 模块导出

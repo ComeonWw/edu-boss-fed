@@ -66,10 +66,6 @@ export default {
 
     // async和await处理一步请求操作
     async onSubmit () {
-      console.log(this.$store.state.user)
-      this.$store.commit('setUser', '实例内容')
-      // this.$store.dispatch('addAction')
-      // 使用try catch处理验证结果
       try {
         // 1.表单验证
         await this.$refs.form.validate()
@@ -83,6 +79,9 @@ export default {
         if (data.state !== 1) {
           return this.$message.error(data.message)
         }
+        // 当登录成功时，记录登录状态，存储到vuex中
+        console.log(data.content)
+        this.$store.commit('setUser', data.content)
         // 成功时跳转到首页，使用this.$router.push()
         this.$router.push({
           name: 'home'
