@@ -20,6 +20,7 @@ Vue.config.productionTip = false
 new Vue({
   // 将路由挂载到router，让路由生效
   router,
+  // 将store改在到store，让vuex的store生效
   store,
   // 渲染根实例(Vue实例)
   render: h => h(App)

@@ -66,6 +66,9 @@ export default {
 
     // async和await处理一步请求操作
     async onSubmit () {
+      console.log(this.$store.state.user)
+      this.$store.commit('setUser', '实例内容')
+      // this.$store.dispatch('addAction')
       // 使用try catch处理验证结果
       try {
         // 1.表单验证
