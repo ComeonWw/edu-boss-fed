@@ -11,21 +11,41 @@
         <!-- Element的Avatar组件 -->
         <el-avatar
           :size="40"
-          src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+          :src="userInfo.portrait || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'"
         ></el-avatar>
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item>用户信息</el-dropdown-item>
-        <el-dropdown-item divided>推出</el-dropdown-item>
+        <el-dropdown-item>{{userInfo.userName}}</el-dropdown-item>
+        <el-dropdown-item divided>退出</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
   </div>
 </template>
 
 <script>
+// 引入userInfo接口请求功能
+import { getUserInfo } from '@/services/user'
 export default {
-  name: 'AppHeader'
+  name: 'AppHeader',
+  // 实例创建时请求数据
+  created () {
+    // 不建议在钩子函数中直接书写逻辑，应该封装到methods中
+    this.loadUserInfo()
+  },
+  data () {
+    // 声明存储用户信息的数据，绑定到视图中
+    return {
+      userInfo: {}
+    }
+  },
+  methods: {
+    async loadUserInfo () {
+      const { data } = await getUserInfo()
+      console.log(data)
+      this.userInfo = data.content
+    }
+  }
 }
 </script>
 
