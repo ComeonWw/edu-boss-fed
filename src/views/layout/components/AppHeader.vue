@@ -17,7 +17,10 @@
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item>{{userInfo.userName}}</el-dropdown-item>
-        <el-dropdown-item divided>退出</el-dropdown-item>
+        <el-dropdown-item
+          divided
+          @click.native='handleLogout'
+        >退出</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
   </div>
@@ -44,6 +47,27 @@ export default {
       const { data } = await getUserInfo()
       console.log(data)
       this.userInfo = data.content
+    },
+    handleLogout () {
+      this.$confirm('确定退出吗', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '退出成功'
+        })
+        // 通过 mutation 中的 setUser 清空 user，由于 setUser 也设置了本地存储，这时也会⾃动清空
+        this.$store.commit('setUser', null)
+        // 跳转到登录页
+        this.$router.push('/login')
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消退出'
+        })
+      })
     }
   }
 }
