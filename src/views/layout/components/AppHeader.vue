@@ -35,6 +35,7 @@ export default {
   created () {
     // 不建议在钩子函数中直接书写逻辑，应该封装到methods中
     this.loadUserInfo()
+    // this.loadUsserInfo()
   },
   data () {
     // 声明存储用户信息的数据，绑定到视图中

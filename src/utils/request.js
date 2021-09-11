@@ -48,6 +48,12 @@ request.interceptors.request.use(function (config) {
   return config
 })
 
+// 是否正在更新token
+let isRefreshing = false
+
+// 存储因等待token刷新而挂起的请求
+let requests = []
+
 // 响应拦截器
 request.interceptors.response.use(function (response) {
   // 状态码为 2xx 都会进⼊这⾥
@@ -72,6 +78,15 @@ request.interceptors.response.use(function (response) {
         return Promise.reject(error)
       }
       // 2.token无效（错误token,过期token）
+      //  -发送token请求之前首先判断isRefreshing，是否存在其他的已发送的刷新请求
+      if (isRefreshing) {
+        // 将发送请求保存在函数中，存储到requests中等待执行，并return终止操作
+        return requests.push(() => {
+          request(error.config)
+        })
+      }
+      //  -如果没有，则更新isRefreshing并发送请求，继续执行后面的操作
+      isRefreshing = true
       // 发送请求，获取新的access_token
       return request({
         method: 'POST',
@@ -91,6 +106,10 @@ request.interceptors.response.use(function (response) {
         // 刷新token成功
         // -存储新的token
         store.commit('setUser', res.data.content)
+        // Token刷新成功后，将requests中的请求重新发送
+        requests.forEach(callback => callback())
+        // 随后清空已被重新发送的请求
+        requests = []
         // -重新发送之前失败的请求
         //  -error.config 是本次失败的请求配置对象
         return request(error.config)
@@ -98,6 +117,9 @@ request.interceptors.response.use(function (response) {
         store.commit('setUser', null)
         redirectLogin()
         return Promise.reject(error)
+      }).finally(() => {
+        //  -Token请求完毕，无论成功失败，都将isRefreshing设置为false
+        isRefreshing = false
       })
     } else if (status === 403) {
       errorMessage = '没有权限，请联系管理员'
