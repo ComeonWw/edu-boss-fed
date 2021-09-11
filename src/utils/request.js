@@ -3,6 +3,10 @@ import axios from 'axios'
 import store from '@/store'
 // 通过局部引入方式引入Element的Message组件功能
 import { Message } from 'element-ui'
+// 引入router
+import router from '@/router'
+// 引入qs
+import qs from 'qs'
 
 // 创建一个axios实例，用于自定义配置axios对象
 const request = axios.create({
@@ -17,6 +21,16 @@ function getBaseURL (url) {
   } else {
     return 'http://edufront.lagou.com'
   }
+}
+
+function redirectLogin () {
+  router.push({
+    name: 'login',
+    query: {
+      // router.currentRouter就是存储了路由信息的对象
+      redirect: router.currentRoute.fullPath
+    }
+  })
 }
 
 // 请求拦截器
@@ -50,7 +64,41 @@ request.interceptors.response.use(function (response) {
     if (status === 400) {
       errorMessage = '请求参数错误'
     } else if (status === 401) {
-      // token无效（过期）处理
+      // 1: 无token信息
+      // 检测，如果store不存在user,跳转登录页
+      if (!store.state.user) {
+        redirectLogin()
+        // 阻止后续操作，抛出错误对象
+        return Promise.reject(error)
+      }
+      // 2.token无效（错误token,过期token）
+      // 发送请求，获取新的access_token
+      return request({
+        method: 'POST',
+        url: '/front/user/refresh_token',
+        data: qs.stringify({
+          refreshtoken: store.state.user.refresh_token
+        })
+      }).then(res => {
+        // 刷新token失败
+        if (res.data.state !== 1) {
+          // 清除无效的用户信息
+          store.commit('setUser', null)
+          // 跳转到登录页面
+          redirectLogin()
+          return Promise.reject(error)
+        }
+        // 刷新token成功
+        // -存储新的token
+        store.commit('setUser', res.data.content)
+        // -重新发送之前失败的请求
+        //  -error.config 是本次失败的请求配置对象
+        return request(error.config)
+      }).catch(() => {
+        store.commit('setUser', null)
+        redirectLogin()
+        return Promise.reject(error)
+      })
     } else if (status === 403) {
       errorMessage = '没有权限，请联系管理员'
     } else if (status === 404) {
