@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { getEditMenuInfo } from '@/services/menu'
+import { createOrUpdateMenu, getEditMenuInfo } from '@/services/menu'
 export default {
   name: 'MenuCreate',
   data () {
@@ -84,15 +84,15 @@ export default {
       console.log('submit!')
       // 1：表单验证(省略)
       // 2：验证通过，提交表单
-      // const { data } = await createOrUpdateMenu(this.form)
+      const { data } = await createOrUpdateMenu(this.form)
       // console.log(data)
       // // 检测是否提交成功,成功时候data.code为‘000000'
-      // if (data.code === '000000') {
-      //   // 提示成功
-      //   this.$message.success('提交成功')
-      //   // 跳回菜单页面
-      //   this.$router.push('/menu')
-      // }
+      if (data.code === '000000') {
+        // 提示成功
+        this.$message.success('提交成功')
+        // 跳回菜单页面
+        this.$router.push('/menu')
+      }
     },
     // 请求上级菜单信息⽅法
     async loadMenuInfo () {
