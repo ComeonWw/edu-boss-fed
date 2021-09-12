@@ -1,13 +1,19 @@
 <template>
   <div class="source">
-    开始资源列表的实现
+    <!-- 引入资源列表组件 -->
+    <resource-list></resource-list>
   </div>
 </template>
 
 <script>
+import ResourceList from './components/list'
 export default {
-  name: 'SourceIndex'
+  name: 'SourceIndex',
+  components: {
+    ResourceList
+  }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+</style>
