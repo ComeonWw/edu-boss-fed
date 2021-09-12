@@ -1,14 +1,14 @@
 <template>
-  <div class="menu-create">
-    <!-- // 设置组件，isEdit默认为false,无需传入 -->
-    <create-or-edit></create-or-edit>
+  <div class="menu-edit">
+    <!-- 设置isEdit为true,展示编辑功能 -->
+    <create-or-edit :isEdit="true"></create-or-edit>
   </div>
 </template>
 
 <script>
 import CreateOrEdit from './components/create-or-edit.vue'
 export default {
-  name: 'MenuCreate',
+  name: 'MenuEdit',
   components: {
     CreateOrEdit
   }

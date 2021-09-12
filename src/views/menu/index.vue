@@ -37,7 +37,7 @@
           <template slot-scope="scope">
             <el-button
               size="mini"
-              @click="handleEdit(scope.$index, scope.row)"
+              @click="handleEdit(scope.row)"
             >编辑</el-button>
             <el-button
               @click="handleDelete(scope.row)"
@@ -71,8 +71,15 @@ export default {
       console.log(data)
       this.menus = data.data
     },
-    handleEdit (index, rowData) {
-      console.log('编辑', index, rowData)
+    handleEdit (rowData) {
+      // 导航到菜单编辑页
+      this.$router.push({
+        name: 'menu-edit',
+        // 传递路由参数
+        params: {
+          id: rowData.id
+        }
+      })
     },
     handleDelete (rowData) {
       // 确认提示

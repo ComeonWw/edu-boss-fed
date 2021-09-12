@@ -41,6 +41,12 @@ const routes = [
         meta: { requiresAuth: true }
       },
       {
+        path: '/menu/:id/edit',
+        name: 'menu-edit',
+        component: () => import(/* webpackChunkName: 'menu-edit' */'@/views/menu/edit'),
+        meta: { requiresAuth: true }
+      },
+      {
         path: '/resource',
         name: 'resource',
         component: () => import(/* webpackChunkName: 'resource' */'@/views/resource/index'),
