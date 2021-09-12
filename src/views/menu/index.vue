@@ -32,9 +32,17 @@
           label="排序">
         </el-table-column>
         <el-table-column
-          label="编辑">
-          <el-button>编辑</el-button>
-          <el-button>删除</el-button>
+          label="操作">
+          <!-- 自定义列模板 -->
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              @click="handleEdit(scope.$index, scope.row)"
+            >编辑</el-button>
+            <el-button
+              @click="handleDelete(scope.row)"
+            >删除</el-button>
+          </template>
         </el-table-column>
       </el-table>
     </el-card>
@@ -42,7 +50,7 @@
 </template>
 
 <script>
-import { getAllMenus } from '@/services/menu'
+import { deleteMenu, getAllMenus } from '@/services/menu'
 export default {
   name: 'MenuIndex',
   data () {
@@ -62,6 +70,26 @@ export default {
       console.log('请求菜单成功')
       console.log(data)
       this.menus = data.data
+    },
+    handleEdit (index, rowData) {
+      console.log('编辑', index, rowData)
+    },
+    handleDelete (rowData) {
+      // 确认提示
+      this.$confirm('确认删除吗？', '删除提示')
+        .then(async () => {
+          // 发送删除请求
+          const { data } = await deleteMenu(rowData.id)
+          if (data.code === '000000') {
+            this.$message.success('删除成功')
+            // 更新数据列表
+            this.loadAllMenus()
+          }
+        })
+        .catch(() => {
+          // 取消提示
+          this.$message.info('已取消删除')
+        })
     }
   }
 }
