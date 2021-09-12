@@ -89,11 +89,9 @@ export default {
   },
   methods: {
     async onSubmit () {
-      console.log('submit!')
       // 1：表单验证(省略)
       // 2：验证通过，提交表单
       const { data } = await createOrUpdateMenu(this.form)
-      // console.log(data)
       // // 检测是否提交成功,成功时候data.code为‘000000'
       if (data.code === '000000') {
         // 提示成功
@@ -103,9 +101,15 @@ export default {
       }
     },
     // 请求上级菜单信息⽅法
+    // 分析：getEditMenuInfo接口在编辑功能是可以获得菜单信息，添加时为空。需要传入动态路由参数id(添加功能默认值为-1)
     async loadMenuInfo () {
-      const { data } = await getEditMenuInfo()
-      console.log(data)
+      // 编辑功能合并后，处理接口id,默认值-1为添加功能使用
+      const id = this.$route.params.id || -1
+      const { data } = await getEditMenuInfo(id)
+      // 如果存在menuinfo,说明为编辑功能，更新展示数据
+      if (data.data.menuInfo) {
+        this.form = data.data.menuInfo
+      }
       // 请求成功的话，保存数据
       if (data.code === '000000') {
         this.parentMenuList = data.data.parentMenuList
