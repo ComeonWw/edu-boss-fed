@@ -21,21 +21,47 @@
       </div>
       <!-- 使用Table组件 -->
       <el-table
-        :data="tableData"
+        :data="resources"
         style="width: 100%">
         <el-table-column
-          prop="date"
-          label="日期"
+          prop="id"
+          label="编号"
           width="180">
         </el-table-column>
         <el-table-column
           prop="name"
-          label="姓名"
+          label="资源名称"
           width="180">
         </el-table-column>
         <el-table-column
-          prop="address"
-          label="地址">
+          prop="url"
+          label="资源路径">
+        </el-table-column>
+        <el-table-column
+          prop="description"
+          label="描述">
+        </el-table-column>
+        <!-- 时间通过过滤器处理，Table组件数据要使用过滤器，需要通过自定义列模板方式设置插槽表达式 -->
+        <el-table-column
+          label="时间">
+          <template slot-scope="scope">
+            <span>{{ scope.row.createdTime | dateFormat }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          width='150'
+        >
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              @click="handleEdit(scope.$index, scope.row)"
+            >编辑</el-button>
+            <el-button
+              size="mini"
+              @click="handleDelete(scope.$index, scope.row)"
+            >删除</el-button>
+          </template>
         </el-table-column>
       </el-table>
     </el-card>
@@ -43,27 +69,16 @@
 </template>
 
 <script>
+import { getResourcePages } from '@/services/resource'
 export default {
   name: 'ResourceList',
+  created () {
+    // 调用
+    this.loadResources()
+  },
   data () {
     return {
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }],
+      resources: [],
       formInline: {
         user: '',
         region: ''
@@ -71,8 +86,24 @@ export default {
     }
   },
   methods: {
+    async loadResources () {
+      // 空对象必须传入，否则参数不完整导致接口报错
+      const { data } = await getResourcePages({})
+      if (data.code === '000000') {
+        this.resources = data.data.records
+      }
+    },
     onSubmit () {
       console.log('查询!')
+    }
+  },
+  filters: {
+    // 日期过滤器
+    dateFormat (date) {
+      date = new Date(date)
+      return `
+        ${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}
+      `
     }
   }
 }
