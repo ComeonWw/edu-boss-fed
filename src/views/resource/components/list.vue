@@ -4,18 +4,26 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <!-- 使用form组件 -->
-        <el-form :inline="true" :model="formInline" class="demo-form-inline">
-          <el-form-item label="审批人">
-            <el-input v-model="formInline.user" placeholder="审批人"></el-input>
+        <el-form :inline="true" :model="form" class="demo-form-inline">
+          <el-form-item label="资源名称">
+            <el-input v-model="form.name" placeholder="资源名称"></el-input>
           </el-form-item>
-          <el-form-item label="活动区域">
-            <el-select v-model="formInline.region" placeholder="活动区域">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
+          <el-form-item label="资源路径">
+            <el-input v-model="form.url" placeholder="资源路径"></el-input>
+          </el-form-item>
+          <el-form-item label="资源分类">
+            <el-select v-model="form.categoryId" placeholder="资源分类">
+              <el-option
+                :label="item.name"
+                :value="item.id"
+                v-for="item in resourceCategories"
+                :key="item.id"
+              ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">查询</el-button>
+            <el-button @click="onReset">重置</el-button>
+            <el-button type="primary" @click="onSubmit">查询搜索</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -79,28 +87,33 @@
 </template>
 
 <script>
-import { getResourcePages } from '@/services/resource'
+import { getResourcePages, getResourceCategory } from '@/services/resource'
 export default {
   name: 'ResourceList',
   created () {
     // 调用
     this.loadResources()
+    this.loadResourceCategory()
   },
   data () {
     return {
       resources: [],
+      // 资源分类列表
+      resourceCategories: [],
       form: {
+        // 资源名称
+        name: '',
+        // 资源路径
+        url: '',
+        // 资源分类
+        categoryId: '',
         // 当前页号，默认为1
         current: 1,
         // 每页数据条数，例如为10，按需设置
         size: 10
       },
       // 数据总条数
-      totalCount: 0,
-      formInline: {
-        user: '',
-        region: ''
-      }
+      totalCount: 0
     }
   },
   methods: {
@@ -118,17 +131,22 @@ export default {
     // 异步请求函数
     async loadResources () {
       // 将参数传入请求
-      const { data } = await getResourcePages({
-        current: this.form.current,
-        size: this.form.size
-      })
+      const { data } = await getResourcePages(this.form)
       if (data.code === '000000') {
         this.resources = data.data.records
         this.totalCount = data.data.total
       }
     },
+    async loadResourceCategory () {
+      const { data } = await getResourceCategory()
+      if (data.code === '000000') {
+        this.resourceCategories = data.data
+      }
+    },
     onSubmit () {
-      console.log('查询!')
+      // 筛选提交，请求数据（将请求参数更改为整个form）
+      this.form.current = 1
+      this.loadResources()
     }
   },
   filters: {

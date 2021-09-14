@@ -8,3 +8,11 @@ export const getResourcePages = (data) => {
     data
   })
 }
+
+// 查询资源分类请求
+export const getResourceCategory = () => {
+  return request({
+    method: 'GET',
+    url: '/boss/resource/category/getAll'
+  })
+}
