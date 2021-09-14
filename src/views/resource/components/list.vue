@@ -31,8 +31,15 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button @click="onReset">重置</el-button>
-            <el-button type="primary" @click="onSubmit">查询搜索</el-button>
+            <el-button
+              @click="onReset"
+              :disabled="isLoading"
+            >重置</el-button>
+            <el-button
+              type="primary"
+              @click="onSubmit"
+              :disabled="isLoading"
+            >查询搜索</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -83,6 +90,7 @@
       </el-table>
       <!-- 分页功能 -->
       <el-pagination
+        :disabled="isLoading"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="form.current"
@@ -122,7 +130,9 @@ export default {
         size: 10
       },
       // 数据总条数
-      totalCount: 0
+      totalCount: 0,
+      // 加载状态
+      isLoading: false
     }
   },
   methods: {
@@ -139,8 +149,12 @@ export default {
     },
     // 异步请求函数
     async loadResources () {
+      // 开始加载数据
+      this.isLoading = true
       // 将参数传入请求
       const { data } = await getResourcePages(this.form)
+      // 请求完毕，取消加载中状态
+      this.isLoading = false
       if (data.code === '000000') {
         this.resources = data.data.records
         this.totalCount = data.data.total
