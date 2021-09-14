@@ -22,7 +22,7 @@
       <!-- 使用Table组件 -->
       <el-table
         :data="resources"
-        style="width: 100%">
+        style="width: 100%; margin-bottom: 20px;">
         <el-table-column
           prop="id"
           label="编号"
@@ -64,6 +64,16 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页功能 -->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="form.current"
+        :page-sizes="[5, 10, 20]"
+        :page-size="form.size"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="totalCount">
+      </el-pagination>
     </el-card>
   </div>
 </template>
@@ -79,6 +89,14 @@ export default {
   data () {
     return {
       resources: [],
+      form: {
+        // 当前页号，默认为1
+        current: 1,
+        // 每页数据条数，例如为10，按需设置
+        size: 10
+      },
+      // 数据总条数
+      totalCount: 0,
       formInline: {
         user: '',
         region: ''
@@ -86,11 +104,27 @@ export default {
     }
   },
   methods: {
+    handleSizeChange (val) {
+      this.form.size = val
+      this.form.current = 1
+      this.loadResources()
+    },
+    handleCurrentChange (val) {
+      // 将val 同步给current
+      this.form.current = val
+      // 请求更新数据
+      this.loadResources()
+    },
+    // 异步请求函数
     async loadResources () {
-      // 空对象必须传入，否则参数不完整导致接口报错
-      const { data } = await getResourcePages({})
+      // 将参数传入请求
+      const { data } = await getResourcePages({
+        current: this.form.current,
+        size: this.form.size
+      })
       if (data.code === '000000') {
         this.resources = data.data.records
+        this.totalCount = data.data.total
       }
     },
     onSubmit () {
