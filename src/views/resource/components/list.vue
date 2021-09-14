@@ -4,15 +4,24 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <!-- 使用form组件 -->
-        <el-form :inline="true" :model="form" class="demo-form-inline">
-          <el-form-item label="资源名称">
-            <el-input v-model="form.name" placeholder="资源名称"></el-input>
+        <el-form
+          :inline="true"
+          :model="form"
+          class="demo-form-inline"
+          ref="form"
+        >
+          <el-form-item label="资源名称" prop="name">
+            <el-input clearable v-model="form.name" placeholder="资源名称"></el-input>
           </el-form-item>
-          <el-form-item label="资源路径">
-            <el-input v-model="form.url" placeholder="资源路径"></el-input>
+          <el-form-item label="资源路径" prop="url">
+            <el-input clearable v-model="form.url" placeholder="资源路径"></el-input>
           </el-form-item>
-          <el-form-item label="资源分类">
-            <el-select v-model="form.categoryId" placeholder="资源分类">
+          <el-form-item label="资源分类" prop="categoryId">
+            <el-select
+              clearable
+              v-model="form.categoryId"
+              placeholder="资源分类"
+            >
               <el-option
                 :label="item.name"
                 :value="item.id"
@@ -147,6 +156,9 @@ export default {
       // 筛选提交，请求数据（将请求参数更改为整个form）
       this.form.current = 1
       this.loadResources()
+    },
+    onReset () {
+      this.$refs.form.resetFields()
     }
   },
   filters: {
