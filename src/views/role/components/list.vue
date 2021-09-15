@@ -22,7 +22,7 @@
         </el-form-item>
       </el-form>
     </div>
-    <el-button>添加角色</el-button>
+    <el-button @click="handleAdd">添加角色</el-button>
     <!-- 使用Table组件 -->
     <el-table
       :data="roles"
@@ -60,7 +60,7 @@
           >分配资源</el-button>
           <el-button
             type="text"
-            @click="handleEdit(scope.$index, scope.row)"
+            @click="handleEdit(scope.row)"
           >编辑</el-button>
           <el-button
             type="text"
@@ -69,14 +69,30 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog
+      :title="isEdit ? '编辑角色' : '添加角色'"
+      :visible.sync="dialogVisible"
+      width="30%"
+    >
+      <!-- 将对话框内容更改为自定义模板 -->
+      <create-or-edit
+        :is-edit="isEdit"
+        :role-id="roleId"
+        @success="onSuccess"
+        @cancel="dialogVisible = false"
+      ></create-or-edit>
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
 import { getRoles, deleteRole } from '@/services/role'
-
+import CreateOrEdit from './create-or-edit'
 export default {
   name: 'RoleList',
+  components: {
+    CreateOrEdit
+  },
   data () {
     return {
       // 为顶部搜索功能设置基础配置项
@@ -86,7 +102,13 @@ export default {
       // 所有角色
       roles: [],
       // 控制加载状态
-      isLoading: false
+      isLoading: false,
+      // 对话框显示与否
+      dialogVisible: false,
+      // 添加或编辑角色
+      isEdit: false,
+      // 编辑角色的id
+      roleId: ''
     }
   },
   created () {
@@ -102,14 +124,28 @@ export default {
       }
       this.isLoading = false
     },
-    onSubmit () {
-
+    // 添加成功的操作
+    onSuccess () {
+      // 关闭对话框
+      this.dialogVisible = false
+      // 刷新列表数据
+      this.loadRoles()
     },
     onReset () {
 
     },
-    handleEdit () {
+    onSubmit () {
 
+    },
+    handleEdit (role) {
+      this.dialogVisible = true
+      this.isEdit = true
+      // 将要编辑的⻆⾊ ID 传递给表单展示
+      this.roleId = role.id
+    },
+    handleAdd () {
+      this.dialogVisible = true
+      this.isEdit = false
     },
     // 删除角色
     handleDelete (role) {
