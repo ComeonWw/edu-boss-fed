@@ -27,7 +27,9 @@ export default {
       type: Boolean,
       default: false
     },
-    roleId: {}
+    roleId: {
+      type: [String, Number]
+    }
   },
   created () {
     if (this.isEdit) {
@@ -53,12 +55,12 @@ export default {
         this.$message.success('添加成功')
         // 子组件触发自定义事件，父组件关闭对话框
         this.$emit('success')
-        this.role = []
+        this.role = {}
       }
     },
     onCancel () {
       this.$emit('cancel')
-      this.role = []
+      this.role = {}
     },
     async loadRole () {
       const { data } = await getRoleById(this.roleId)

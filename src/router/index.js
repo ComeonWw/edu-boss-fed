@@ -29,6 +29,14 @@ const routes = [
         meta: { requiresAuth: true }
       },
       {
+        path: '/role/:roleId/alloc-menu',
+        name: 'alloc-menu',
+        component: () => import(/* webpackChunkName: 'alloc-menu' */'@/views/role/alloc-menu'),
+        meta: { requiresAuth: true },
+        // /设置props: true,让路径参数通过props方式传递给组件
+        props: true
+      },
+      {
         path: '/menu',
         name: 'menu',
         component: () => import(/* webpackChunkName: 'menu' */'@/views/menu/index'),

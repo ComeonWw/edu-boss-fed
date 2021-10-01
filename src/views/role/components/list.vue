@@ -51,9 +51,16 @@
         align="center"
         width="150px"
       >
+        <!-- scope, 作用域插槽提供当前行数据 -->
         <template slot-scope="scope">
           <el-button
             type="text"
+            @click="$router.push({
+              name: 'alloc-menu',
+              params: {
+                roleId: scope.row.id
+              }
+            })"
           >分配菜单</el-button>
           <el-button
             type="text"
@@ -108,7 +115,7 @@ export default {
       // 添加或编辑角色
       isEdit: false,
       // 编辑角色的id
-      roleId: ''
+      roleId: null
     }
   },
   created () {
@@ -146,6 +153,7 @@ export default {
     handleAdd () {
       this.dialogVisible = true
       this.isEdit = false
+      this.roleId = null
     },
     // 删除角色
     handleDelete (role) {
