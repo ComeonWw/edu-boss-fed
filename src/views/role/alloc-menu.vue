@@ -11,7 +11,7 @@
         :default-checked-keys="checkedKeys">
       </el-tree>
       <div>
-        <el-button>清空</el-button>
+        <el-button @click="resetChecked">清空</el-button>
         <el-button type="primary" @click="onSave">保存</el-button>
       </div>
     </el-card>
@@ -86,6 +86,10 @@ export default {
           this.checkedKeys = [...this.checkedKeys, menu.id]
         }
       })
+    },
+    // 设置清空方法
+    resetChecked () {
+      this.$refs.menuTree.setCheckedKeys([])
     }
   }
 }
