@@ -2,9 +2,9 @@
   <el-card>
     <div slot="header">
       <el-form
-      :inline="true"
-      :model="filterParams"
-      ref="filter-form">
+        :inline="true"
+        :model="filterParams"
+        ref="filter-form">
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="filterParams.phone"></el-input>
         </el-form-item>
@@ -89,11 +89,30 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="50%"
+    >
+      <el-select v-model="roleIdList" multiple placeholder="请选择">
+        <el-option
+          v-for="item in roles"
+          :key="item.value"
+          :label="item.name"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAllocRole">确 定</el-button>
+      </span>
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
 import { getUserPages, forbidUser } from '@/services/user'
+import { getAllRoles, allocateUserRoles, getUserRoles } from '@/services/role'
 
 export default {
   name: 'UserList',
@@ -108,7 +127,14 @@ export default {
         endCreateTime: '',
         rangeDate: []
       },
-      isLoading: true
+      isLoading: true,
+      dialogVisible: false,
+      // 所有角色，对象实例的option
+      roles: [],
+      // 选中角色，对应示例的value1
+      roleIdList: [],
+      // 当前分配角色的ID(声明在data中)
+      currentRoleId: null
     }
   },
   created () {
@@ -144,7 +170,35 @@ export default {
       this.loadUsers()
     },
     // 点击用户的分配角色按钮
-    handleSelectRole () {
+    async handleSelectRole (userData) {
+      // 将当前操作的用户ID保存，一遍提交使用
+      this.currentRoleId = userData.id
+      // 显示对话框
+      this.dialogVisible = true
+      // 点击后加载角色列表
+      const { data } = await getAllRoles()
+      this.roles = data.data
+      // 根据用户id请求角色信息（data被之前的请求使用过了，换个名字data2）
+      const { data: data2 } = await getUserRoles(userData.id)
+      if (data2.code === '000000') {
+        // 遍历得到的⻆⾊列表，将id组成数据替换给 roleIdList 即可
+        this.roleIdList = data2.data.map(item => item.id)
+      }
+    },
+    // 提交分配角色操作
+    async handleAllocRole () {
+      // 提交
+      const { data } = await allocateUserRoles({
+        userId: this.currentRoleId,
+        roleIdList: this.roleIdList
+      })
+      if (data.code === '000000') {
+        // 提示
+        this.$message.success('分配角色成功')
+        // 关闭对话框
+        this.dialogVisible = false
+        this.roleIdList = []
+      }
     }
   }
 }
