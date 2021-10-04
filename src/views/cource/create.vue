@@ -60,22 +60,36 @@
         <div v-show="activeStep === 2">
           <!-- 使用Element中的Input复合型输入框组件 -->
           <el-form-item label="售卖价格">
-            <el-input>
+            <el-input
+              type="number"
+              v-model="course.discounts"
+              :min="0"
+            >
               <template slot="append">元</template>
             </el-input>
           </el-form-item>
           <el-form-item label="商品原价">
-            <el-input>
+            <el-input
+              type="number"
+              v-model="course.price"
+              :min="0"
+            >
               <template slot="append">元</template>
             </el-input>
           </el-form-item>
           <el-form-item label="销量">
-            <el-input>
+            <el-input
+              type="number"
+              v-model="course.sales"
+              :min="0"
+            >
               <template slot="append">单</template>
             </el-input>
           </el-form-item>
           <el-form-item label="活动标签">
-            <el-input>
+            <el-input
+              v-model="course.discountsTag"
+            >
             </el-input>
           </el-form-item>
         </div>
@@ -83,11 +97,11 @@
           <!-- 秒杀活动 -->
           <!-- 设置秒杀状态开关 -->
           <el-switch
-            v-model="isSecKill"
+            v-model="course.activityCourse"
             active-color="#13ce66"
             inactive-color="#ff4949">
           </el-switch>
-          <template v-if="isSecKill">
+          <template v-if="course.activityCourse">
             <!-- 其他部分的基础结构 -->
             <el-form-item label="开始时间">
               <el-date-picker
@@ -102,12 +116,20 @@
               </el-date-picker>
             </el-form-item>
             <el-form-item label="秒杀价">
-              <el-input>
+              <el-input
+                v-model="course.activityCourseDTO.amount"
+                type="number"
+                :min="0"
+              >
                 <template slot="append">元</template>
               </el-input>
             </el-form-item>
             <el-form-item label="秒杀库存">
-              <el-input>
+              <el-input
+                v-model="course.activityCourseDTO.stock"
+                type="number"
+                :min="0"
+              >
                 <template slot="append">个</template>
               </el-input>
             </el-form-item>
@@ -147,8 +169,6 @@ export default {
         { id: 5, title: '课程详情', icon: 'el-icon-picture' }
       ],
       imageUrl: '',
-      // 秒杀状态
-      isSecKill: false,
       // 保存课程信息
       course: {
         id: 0,
@@ -167,9 +187,12 @@ export default {
           description: ''
         },
         courseDescriptionMarkDown: '',
+        // 商品原价
         price: 0,
+        // 售票价格
         discounts: 0,
         priceTag: '',
+        // 活动标签
         discountsTag: '',
         isNew: true,
         isNewDes: '',
@@ -182,8 +205,10 @@ export default {
         // 课程概述2
         previewSecondField: '',
         status: 0,
+        // 销量
         sales: 0,
-        activityCourse: true,
+        // 秒杀课程
+        activityCourse: false,
         activityCourseDTO: {
           id: 0,
           courseId: 0,
