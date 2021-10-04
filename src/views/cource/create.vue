@@ -20,24 +20,36 @@
       <el-form>
         <div v-show="activeStep === 0">
           <el-form-item label="课程名称">
-            <el-input></el-input>
+            <el-input v-model="course.courseName"></el-input>
           </el-form-item>
           <el-form-item label="课程简介">
-            <el-input></el-input>
+            <el-input v-model="course.brief"></el-input>
           </el-form-item>
           <el-form-item label="课程概述">
-            <el-input></el-input>
+            <el-input
+              v-model="course.previewFirstField"
+              placeholder="概述1"
+            >
+              <template slot="append">{{course.previewFirstField.length}}/20</template>
+            </el-input>
+            <el-input
+              v-model="course.previewSecondField"
+              placeholder="概述2"
+            >
+              <template slot="append">{{course.previewSecondField.length}}/20</template>
+            </el-input>
           </el-form-item>
           <el-form-item label="讲师姓名">
-            <el-input></el-input>
+            <el-input v-model="course.teacherDTO.teacherName"></el-input>
           </el-form-item>
           <el-form-item label="讲师简介">
-            <el-input></el-input>
+            <el-input v-model="course.teacherDTO.description"></el-input>
           </el-form-item>
           <el-form-item label="课程排序">
             <!-- 计数器组件 -->
             <el-input-number
               label="描述文字"
+              v-model="course.sortNum"
             ></el-input-number>
           </el-form-item>
         </div>
@@ -49,9 +61,11 @@
               action="https://jsonplaceholder.typicode.com/posts/"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
+              :before-upload="beforeAvatarUpload"
+              :http-request="handleUpload">
               <!-- 显示预览元素的图片 -->
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <!-- 图片预览修改为当前Upload对应数据 -->
+              <img v-if="course.courseListImg" :src="course.courseListImg" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </el-form-item>
@@ -62,9 +76,10 @@
               action="https://jsonplaceholder.typicode.com/posts/"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
+              :before-upload="beforeAvatarUpload"
+              :http-request="handleUpload">
               <!-- 显示预览元素的图片 -->
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <img v-if="course.courseListImg" :src="course.courseListImg" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </el-form-item>
@@ -140,6 +155,8 @@
 </template>
 
 <script>
+import { uploadCourseImage } from '@/services/course'
+//  saveOrUpdateCourse,
 export default {
   name: 'CourseCreate',
   data () {
@@ -155,7 +172,52 @@ export default {
       ],
       imageUrl: '',
       // 秒杀状态
-      isSecKill: false
+      isSecKill: false,
+      // 保存课程信息
+      course: {
+        id: 0,
+        // 课程名称
+        courseName: '',
+        // 课程描述
+        brief: '',
+        teacherDTO: {
+          id: 0,
+          courseId: 0,
+          // 讲师名称
+          teacherName: '',
+          teacherHeadPicUrl: '',
+          position: '',
+          // 讲师描述
+          description: ''
+        },
+        courseDescriptionMarkDown: '',
+        price: 0,
+        discounts: 0,
+        priceTag: '',
+        discountsTag: '',
+        isNew: true,
+        isNewDes: '',
+        courseListImg: '',
+        courseImgUrl: '',
+        // 课程排序
+        sortNum: 0,
+        // 课程概述1
+        previewFirstField: '',
+        // 课程概述2
+        previewSecondField: '',
+        status: 0,
+        sales: 0,
+        activityCourse: true,
+        activityCourseDTO: {
+          id: 0,
+          courseId: 0,
+          beginTime: '',
+          endTime: '',
+          amount: 0,
+          stock: 0
+        },
+        autoOnlineTime: ''
+      }
     }
   },
   methods: {
@@ -176,6 +238,29 @@ export default {
         this.$message.error('上传头像图片大小不能超过 2MB!')
       }
       return isJPG && isLt2M
+    },
+    // 保存
+    // handleSave () {
+    //   console.log('保存')
+    // }
+
+    // 自定义文件上传操作
+    async handleUpload (options) {
+      // 创建FormData对象保存数据
+      const fd = new FormData()
+      // 添加数据的键要根据接口文档设置
+      fd.append('file', options.file)
+      // 发送请求
+      const { data } = await uploadCourseImage(fd)
+      if (data.code === '000000') {
+        // ⽚预览为组件在 on-success 时设置的本地预览功能
+        // 默认检测 imgUrl, 这⾥更换为 course中对应地址即可
+        // before-upload ⽤于在上传⽂件前进⾏规则校验（例如⽂件格式与⼤⼩，可⾃⾏调整）
+        // data.data.name 为服务器提供的地址
+        this.course.courseListImg = data.data.name
+        // 提示
+        this.$message.success('上传成功')
+      }
     }
   }
 }
