@@ -74,11 +74,13 @@
           <!-- 使用作用域插槽,使用element开关组件, 将服务端给的数据绑定到switch开关，active-value加了:表示数字,不加的话表示字符串-->
           <template slot-scope="scope">
             <el-switch
+              :disabled="scope.row.isStatusLoading"
               v-model="scope.row.status"
               active-color="#13ce66"
               inactive-color="#ff4949"
               :active-value="1"
-              :inactive="0">
+              :inactive="0"
+              @change="onStateChange(scope.row)">
             </el-switch>
           </template>
         </el-table-column>
@@ -121,7 +123,7 @@
 </template>
 
 <script>
-import { getQueryCourses } from '@/services/course'
+import { getQueryCourses, changeState } from '@/services/course'
 
 export default {
   name: 'CourseList',
@@ -147,13 +149,27 @@ export default {
     this.loadCourses()
   },
   methods: {
+    // 上下架切换处理
+    async onStateChange (course) {
+      // 请求发送前，更改课程操作状态
+      course.isStatusLoading = true
+      const { data } = await changeState({
+        courseId: course.id,
+        status: course.status
+      })
+      if (data.code === '000000') {
+        this.$message.success(`${course.status === 0 ? '下架' : '上架'}成功`)
+        // 请求完毕，更改课程操作状态
+        course.isStatusLoading = false
+      }
+    },
     // 加载课程
     async loadCourses () {
       this.isLoading = true
       const { data } = await getQueryCourses(this.filterParams)
       if (data.code === '000000') {
         data.data.records.forEach(item => {
-          // 用于表示更改的状态
+          // 给每条数据设置属性，标识状态是否处于切换中，默认false
           item.isStatusLoading = false
         })
         // 保存课程信息
