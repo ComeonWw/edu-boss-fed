@@ -67,6 +67,12 @@ const routes = [
         meta: { requiresAuth: true }
       },
       {
+        path: '/cource/create',
+        name: 'course-create',
+        component: () => import(/* webpackChunkName: 'course-create' */'@/views/cource/create.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
         path: '/user',
         name: 'user',
         component: () => import(/* webpackChunkName: 'user' */'@/views/user/index'),
