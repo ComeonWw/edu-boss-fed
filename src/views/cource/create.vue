@@ -137,11 +137,22 @@
         </div>
         <div v-show="activeStep === 4">
           <el-form-item label="课程详情">
-            <el-input type="textarea"></el-input>
+            <el-input
+              type="textarea"
+              v-model="course.courseDescriptionMarkDown"
+            ></el-input>
           </el-form-item>
+          <!-- 增加上下架开关 -->
+          <el-switch
+            v-model="course.status"
+            :active-value="1"
+            :inactive-value="0"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
           <!-- 最后步骤中设置保存按钮 -->
           <el-form-item>
-            <el-button type="primary">保存</el-button>
+            <el-button type="primary" @click="handleSave">保存</el-button>
           </el-form-item>
         </div>
       </el-form>
@@ -151,7 +162,8 @@
 
 <script>
 import CourseImage from './components/course-image.vue'
-//  saveOrUpdateCourse,
+import { saveOrUpdateCourse } from '@/services/course'
+
 export default {
   name: 'CourseCreate',
   components: {
@@ -171,14 +183,14 @@ export default {
       imageUrl: '',
       // 保存课程信息
       course: {
-        id: 0,
+        // id: 0,
         // 课程名称
         courseName: '',
         // 课程描述
         brief: '',
         teacherDTO: {
-          id: 0,
-          courseId: 0,
+          // id: 0,
+          // courseId: 0,
           // 讲师名称
           teacherName: '',
           teacherHeadPicUrl: '',
@@ -186,6 +198,7 @@ export default {
           // 讲师描述
           description: ''
         },
+        // 课程详情
         courseDescriptionMarkDown: '',
         // 商品原价
         price: 0,
@@ -204,20 +217,31 @@ export default {
         previewFirstField: '',
         // 课程概述2
         previewSecondField: '',
+        // 商品是否上架,1表示上架,0表示未上架
         status: 0,
         // 销量
         sales: 0,
         // 秒杀课程
         activityCourse: false,
         activityCourseDTO: {
-          id: 0,
-          courseId: 0,
+          // id: 0,
+          // courseId: 0,
           beginTime: '',
           endTime: '',
           amount: 0,
           stock: 0
         },
         autoOnlineTime: ''
+      }
+    }
+  },
+  methods: {
+    async handleSave () {
+      // 发送请求
+      const { data } = await saveOrUpdateCourse(this.course)
+      if (data.code === '000000') {
+        this.$router.push({ name: 'cource' })
+        this.$message.success('添加课程成功')
       }
     }
   }
