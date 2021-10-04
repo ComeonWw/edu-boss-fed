@@ -54,35 +54,8 @@
           </el-form-item>
         </div>
         <div v-show="activeStep === 1">
-          <el-form-item label="课程封面">
-            <!-- Element官方 Upload上传组件 - 用户头像上传 -->
-            <el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-              :http-request="handleUpload">
-              <!-- 显示预览元素的图片 -->
-              <!-- 图片预览修改为当前Upload对应数据 -->
-              <img v-if="course.courseListImg" :src="course.courseListImg" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
-          </el-form-item>
-          <el-form-item label="解锁封面">
-            <!-- Element官方 Upload上传组件 - 用户头像上传 -->
-            <el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-              :http-request="handleUpload">
-              <!-- 显示预览元素的图片 -->
-              <img v-if="course.courseListImg" :src="course.courseListImg" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
-          </el-form-item>
+          <course-image v-model="course.courseListImg" :limit="3"></course-image>
+          <course-image v-model="course.courseImgUrl"></course-image>
         </div>
         <div v-show="activeStep === 2">
           <!-- 使用Element中的Input复合型输入框组件 -->
@@ -155,14 +128,17 @@
 </template>
 
 <script>
-import { uploadCourseImage } from '@/services/course'
+import CourseImage from './components/course-image.vue'
 //  saveOrUpdateCourse,
 export default {
   name: 'CourseCreate',
+  components: {
+    CourseImage
+  },
   data () {
     return {
       // 步骤条进度
-      activeStep: 1,
+      activeStep: 0,
       steps: [
         { id: 1, title: '基本信息', icon: 'el-icon-edit' },
         { id: 2, title: '课程封面', icon: 'el-icon-upload' },
@@ -219,49 +195,6 @@ export default {
         autoOnlineTime: ''
       }
     }
-  },
-  methods: {
-    // 文件上传成功时的钩子
-    handleAvatarSuccess (res, file) {
-      console.log(file)
-      this.imageUrl = URL.createObjectURL(file.raw)
-    },
-    // 上传文件之前的钩子
-    beforeAvatarUpload (file) {
-      const isJPG = file.type === 'image/jpeg'
-      const isLt2M = file.size / 1024 / 1024 < 2
-
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!')
-      }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!')
-      }
-      return isJPG && isLt2M
-    },
-    // 保存
-    // handleSave () {
-    //   console.log('保存')
-    // }
-
-    // 自定义文件上传操作
-    async handleUpload (options) {
-      // 创建FormData对象保存数据
-      const fd = new FormData()
-      // 添加数据的键要根据接口文档设置
-      fd.append('file', options.file)
-      // 发送请求
-      const { data } = await uploadCourseImage(fd)
-      if (data.code === '000000') {
-        // ⽚预览为组件在 on-success 时设置的本地预览功能
-        // 默认检测 imgUrl, 这⾥更换为 course中对应地址即可
-        // before-upload ⽤于在上传⽂件前进⾏规则校验（例如⽂件格式与⼤⼩，可⾃⾏调整）
-        // data.data.name 为服务器提供的地址
-        this.course.courseListImg = data.data.name
-        // 提示
-        this.$message.success('上传成功')
-      }
-    }
   }
 }
 </script>
@@ -269,28 +202,5 @@ export default {
 <style lang="scss" scoped>
 .el-step {
   cursor: pointer;
-}
-::v-deep .avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-::v-deep .avatar-uploader .el-upload:hover {
-  border-color: #409EFF;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-}
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
 }
 </style>

@@ -28,13 +28,15 @@ export const saveOrUpdateCourse = data => {
   })
 }
 
-// 上传图片
+// 上传图片,添加配置项与参数
 export const uploadCourseImage = (data, onUploadProgress) => {
   // 接口要求的请求数据类型为multipart/form-data
   // 所以需要提交FormData数据对象
   return request({
     method: 'POST',
     url: '/boss/course/upload',
-    data
+    data,
+    // Axios将HTML5新增的上传进度事件：progress
+    onUploadProgress
   })
 }
