@@ -1,6 +1,6 @@
 <template>
   <div class="course-create">
-    <create-or-edit></create-or-edit>
+    <create-or-edit :is-edit="isEdit"></create-or-edit>
   </div>
 </template>
 
@@ -11,6 +11,11 @@ export default {
   name: 'CourseCreate',
   components: {
     CreateOrEdit
+  },
+  data () {
+    return {
+      isEdit: false
+    }
   }
 }
 </script>

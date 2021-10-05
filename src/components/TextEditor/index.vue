@@ -15,6 +15,21 @@ export default {
       default: ''
     }
   },
+  data () {
+    return {
+      editor: null,
+      // 要编辑的数据是否加载完毕
+      isLoaded: false
+    }
+  },
+  watch: {
+    value () {
+      // 为富文本编辑器初始胡
+      if (!this.isLoaded) {
+        this.editor.txt.html(this.value)
+      }
+    }
+  },
   // 由于需要进行DOM 操作,使用mounted钩子
   mounted () {
     // 初始化富文本编辑器
@@ -39,6 +54,8 @@ export default {
       }
       editor.create()
       editor.txt.html(this.value)
+      // 将富文本编辑器实例保存给this以便在watch中操作
+      this.editor = editor
     }
   }
 }

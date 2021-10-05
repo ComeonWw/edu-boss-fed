@@ -263,6 +263,15 @@ export default {
     async loadCourse () {
       const { data } = await getCourseById(this.courseId)
       if (data.code === '000000') {
+        // 为非秒杀课程初始化属性
+        if (!data.data.activityCourse) {
+          data.data.activityCourseDTO = {
+            beginTime: '',
+            endTime: '',
+            amount: 0,
+            stock: 0
+          }
+        }
         // 将要编辑的分类数据保存到course中
         this.course = data.data
       }
