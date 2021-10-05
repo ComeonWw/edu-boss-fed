@@ -136,11 +136,8 @@
           </template>
         </div>
         <div v-show="activeStep === 4">
-          <el-form-item label="课程详情">
-            <el-input
-              type="textarea"
-              v-model="course.courseDescriptionMarkDown"
-            ></el-input>
+          <el-form-item>
+            <text-editor v-model="course.courseDescriptionMarkDown"></text-editor>
           </el-form-item>
           <!-- 增加上下架开关 -->
           <el-switch
@@ -163,11 +160,14 @@
 <script>
 import CourseImage from './components/course-image.vue'
 import { saveOrUpdateCourse } from '@/services/course'
+import TextEditor from '@/components/TextEditor/index'
 
 export default {
   name: 'CourseCreate',
+  // 注册为子组件
   components: {
-    CourseImage
+    CourseImage,
+    TextEditor
   },
   data () {
     return {
@@ -199,7 +199,7 @@ export default {
           description: ''
         },
         // 课程详情
-        courseDescriptionMarkDown: '',
+        courseDescriptionMarkDown: '<p>初始值</p>',
         // 商品原价
         price: 0,
         // 售票价格
